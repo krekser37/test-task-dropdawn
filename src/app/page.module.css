@@ -1,0 +1,43 @@
+.main{
+  max-width: 1220px;
+  margin: 0 auto;
+/*   padding-top: 40px; */
+}
+
+.container {
+  margin: 0 ;
+}
+
+.title{
+  margin: 40px auto ;
+}
+.description{
+  min-width: 600px;
+}
+
+.menu{
+  height: 150vh;
+  width: 100%;
+  display: grid;
+  margin: 0 auto;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+
+
+/*   justify-content: space-between;
+  align-items: center;
+  align-content: center; */
+  gap: 100px;
+}
+
+.menu__item{
+  background-color: var(--success-accent-color);
+  text-align: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.item:last-child{
+  margin-bottom: 0;
+}

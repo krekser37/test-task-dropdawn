@@ -1,0 +1,17 @@
+.list{
+  width: 260px;
+  padding: 10px;
+  border: 1px solid ;
+  border-radius: 5px;
+  background-color: var(--bg-accent-color);
+}
+
+
+.item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
