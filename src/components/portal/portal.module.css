@@ -1,5 +1,5 @@
 .overlay {
-  position: absolute;
+  position: fixed;
   width: 100%;
   top: 0;
   right: 0;
@@ -9,11 +9,4 @@
   display: flex;
   justify-content: center;
   align-items: center; 
-}
-
-.wrapper {
-  position: absolute;
-  z-index: 1001;
-  left: 0;
-  top:0;
 }

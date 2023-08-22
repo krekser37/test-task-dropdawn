@@ -16,7 +16,7 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
   return (
     <html lang="en">
       <body className={openSans.className}>{children}
-        <div id="modalsContainer" />
+        <div id="portal-root"></div>
       </body>
     </html>
   )

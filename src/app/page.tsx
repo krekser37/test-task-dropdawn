@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, createRef, useRef, MutableRefObject, useCallback } from 'react';
+import { useEffect, useState, useRef, MutableRefObject, useCallback, RefObject } from 'react';
 import styles from './page.module.css'
 import { Menu } from 'react-feather';
 import { CoordsModal } from '@/components/coords-modal/coords-modal';
 import MenyItem from '@/components/meny-item/meny-item';
+import Portal from '@/components/portal/portal';
 
-// const oneRef = createRef();
 export default function Home() {
   const data = {
     left: 0,
@@ -16,10 +16,10 @@ export default function Home() {
     width: 0,
     height: 0,
   }
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modal, setModal] = useState<string>('');
   const [dataEl, setDataEl] = useState<{ left: number, top: number, bottom: number, right: number, width: number, height: number }>(data);
-  const [refCurrent, setRefCurrent] = useState(null);
+  const [refCurrent, setRefCurrent] = useState(null); /* <MutableRefObject<null>> */
   const [position, setPosition] = useState<'top_left' | 'top_right' | 'bottom_left' | 'bottom_right' | undefined>(undefined);
   const { left, top, bottom, right, width, height } = dataEl;
 
@@ -32,17 +32,19 @@ export default function Home() {
 
   let dataElRef = useRef<{ left: number, top: number, bottom: number, right: number, width: number, height: number }>();
   let positionRef = useRef<'top_left' | 'top_right' | 'bottom_left' | 'bottom_right' | undefined>();
+
   dataElRef.current = dataEl;
   positionRef.current = position;
 
   const positionType = useCallback(() => {
-/*     console.log('top', top); */
-    if (width === 0) return
-    else if (left < window.innerWidth /2 && top < (window.innerHeight + window.scrollY) / 2) {
+    /*     console.log('top', top); */
+    if (width === 0) {
+      return
+    } else if (left < window.innerWidth / 2 && top < (window.innerHeight + window.scrollY) / 2) {
       return setPosition('top_left');
     } else if (right > window.innerWidth / 2 && top < window.innerHeight / 2) {
       return setPosition('top_right');
-    } else if (bottom  > (window.innerHeight - window.scrollY) / 2 && left < (window.innerWidth- window.scrollX) / 2) {
+    } else if (bottom > (window.innerHeight - window.scrollY) / 2 && left < (window.innerWidth - window.scrollX) / 2) {
       return setPosition('bottom_left');
     } else if (bottom > (window.innerHeight - window.scrollY) / 2 && right > window.innerWidth / 2) {
       return setPosition('bottom_right');
@@ -50,17 +52,19 @@ export default function Home() {
   }, [bottom, left, right, top, width]);
 
   const updateTooltipCoords = useCallback((refCurrent: any) => {
-    if (refCurrent !== null) {
-      const rect = refCurrent.getBoundingClientRect();
-      setDataEl({
-        left: rect.left+ window.screenX,
-        top: rect.top + window.screenY,
-        bottom: rect.bottom + window.screenY,
-        right: rect.right+ window.screenX,
-        width: rect.width,
-        height: rect.height,
-      });
+    if (refCurrent === null) {
+      return;
     }
+    const rect = refCurrent.getBoundingClientRect();
+    setDataEl({
+      left: rect.left + window.screenX,
+      top: rect.top + window.screenY,
+      bottom: rect.bottom + window.screenY,
+      right: rect.right + window.screenX,
+      width: rect.width,
+      height: rect.height,
+    });
+
   }, []);
 
   const openTab = useCallback((ref: MutableRefObject<null>, tab: string) => {
@@ -79,23 +83,18 @@ export default function Home() {
 
   const scroll = useCallback(() => {
     window.addEventListener('scroll', positionType);
-    console.log(window.innerHeight , window.scrollY, dataEl.top);
-    if (window.scrollY > dataEl.top) {
-      setIsOpen(false);
-    } else setIsOpen(true);
-  }, [positionType, dataEl.top]);
+    window.addEventListener("scroll", updateTooltipCoords);
+    /*     console.log(window.innerHeight, window.scrollY, dataEl.top); */
+    /*     if (window.scrollY > dataEl.top) {
+          setIsOpen(false);
+        } else setIsOpen(true); */
+  }, [positionType, dataEl.top, updateTooltipCoords]);
 
   useEffect(() => {
     positionType()
     updateTooltipCoords(refCurrent);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scroll])
-
-  useEffect(() => {
-    window.addEventListener('scroll', scroll);
-    updateTooltipCoords(refCurrent);
-
-  }, [refCurrent, scroll, updateTooltipCoords])
+  }, [scroll, updateTooltipCoords, refCurrent])
 
   return (
     <main className={styles.main}>
@@ -103,7 +102,6 @@ export default function Home() {
         Test task Dropdawn
       </h1>
       <div className={styles.container}>
-
         <ul className={styles.menu}>
           <li className={styles.menu__item} ref={oneRef} onClick={(e) => openTab(oneRef, "one")}><Menu /></li>
           <li className={styles.menu__item} ref={twoRef} onClick={(e) => openTab(twoRef, "two")}><Menu /></li>
@@ -113,10 +111,10 @@ export default function Home() {
           <li className={styles.menu__item} ref={sixRef} onClick={(e) => openTab(sixRef, "six")}><Menu /></li>
         </ul>
       </div>
-      {isOpen && <CoordsModal onOverlayClick={onClose} position={position}
-        dataEl={dataEl} updateTooltipCoords={updateTooltipCoords}>
+      <Portal show={isOpen} onOverlayClick={onClose}><CoordsModal position={position}
+        dataEl={dataEl} updateTooltipCoords={() => updateTooltipCoords(refCurrent)}>
         <MenyItem />
-      </CoordsModal>}
+      </CoordsModal></Portal>
     </main>
   )
 }
