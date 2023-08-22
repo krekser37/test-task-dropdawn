@@ -1,27 +1,38 @@
 "use client";
 
-import { useEffect, useState, useRef, MutableRefObject, useCallback, RefObject } from 'react';
-import styles from './page.module.css'
+import { useEffect, useState, useRef, MutableRefObject, useCallback } from 'react';
+import styles from './page.module.css';
 import { Menu } from 'react-feather';
 import { CoordsModal } from '@/components/coords-modal/coords-modal';
 import MenyItem from '@/components/meny-item/meny-item';
 import Portal from '@/components/portal/portal';
 
+const data = {
+  left: 0,
+  top: 0,
+  bottom: 0,
+  right: 0,
+  width: 0,
+  height: 0,
+}
+
+type Tdata = {
+  left: number,
+  top: number,
+  bottom: number,
+  right: number,
+  width: number,
+  height: number,
+}
+
 export default function Home() {
-  const data = {
-    left: 0,
-    top: 0,
-    bottom: 0,
-    right: 0,
-    width: 0,
-    height: 0,
-  }
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [modal, setModal] = useState<string>('');
-  const [dataEl, setDataEl] = useState<{ left: number, top: number, bottom: number, right: number, width: number, height: number }>(data);
-  const [refCurrent, setRefCurrent] = useState(null); /* <MutableRefObject<null>> */
+  const [menyHidden, setMenyHidden] = useState<boolean>(true);
+  const [dataEl, setDataEl] = useState<Tdata>(data);
+  const [refCurrent, setRefCurrent] = useState(null);
   const [position, setPosition] = useState<'top_left' | 'top_right' | 'bottom_left' | 'bottom_right' | undefined>(undefined);
-  const { left, top, bottom, right, width, height } = dataEl;
+  const { left, top, bottom, right, width } = dataEl;
 
   const oneRef = useRef(null);
   const twoRef = useRef(null);
@@ -30,14 +41,13 @@ export default function Home() {
   const fiveRef = useRef(null);
   const sixRef = useRef(null);
 
-  let dataElRef = useRef<{ left: number, top: number, bottom: number, right: number, width: number, height: number }>();
+  let dataElRef = useRef<Tdata>();
   let positionRef = useRef<'top_left' | 'top_right' | 'bottom_left' | 'bottom_right' | undefined>();
 
   dataElRef.current = dataEl;
   positionRef.current = position;
 
   const positionType = useCallback(() => {
-    /*     console.log('top', top); */
     if (width === 0) {
       return
     } else if (left < window.innerWidth / 2 && top < (window.innerHeight + window.scrollY) / 2) {
@@ -64,37 +74,34 @@ export default function Home() {
       width: rect.width,
       height: rect.height,
     });
-
   }, []);
 
   const openTab = useCallback((ref: MutableRefObject<null>, tab: string) => {
     setIsOpen(true);
-    setModal(tab);
     setRefCurrent(ref.current);
     updateTooltipCoords(refCurrent);
     positionType();
   }, [positionType, refCurrent, updateTooltipCoords]);
 
   const onClose = () => {
+    console.log('Dropdawn закрыт');
     setIsOpen(false);
-    setModal('')
     setDataEl(data)
   };
 
   const scroll = useCallback(() => {
     window.addEventListener('scroll', positionType);
     window.addEventListener("scroll", updateTooltipCoords);
-    /*     console.log(window.innerHeight, window.scrollY, dataEl.top); */
-    /*     if (window.scrollY > dataEl.top) {
-          setIsOpen(false);
-        } else setIsOpen(true); */
-  }, [positionType, dataEl.top, updateTooltipCoords]);
+  }, [positionType, updateTooltipCoords]);
+
+  useEffect(() => {
+    dataEl.top < 0 ? setMenyHidden(false) : setMenyHidden(true)
+  }, [dataEl.top])
 
   useEffect(() => {
     positionType()
     updateTooltipCoords(refCurrent);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scroll, updateTooltipCoords, refCurrent])
+  }, [scroll, updateTooltipCoords, positionType, refCurrent])
 
   return (
     <main className={styles.main}>
@@ -111,10 +118,13 @@ export default function Home() {
           <li className={styles.menu__item} ref={sixRef} onClick={(e) => openTab(sixRef, "six")}><Menu /></li>
         </ul>
       </div>
-      <Portal show={isOpen} onOverlayClick={onClose}><CoordsModal position={position}
-        dataEl={dataEl} updateTooltipCoords={() => updateTooltipCoords(refCurrent)}>
-        <MenyItem />
-      </CoordsModal></Portal>
+      <Portal show={isOpen} onOverlayClick={onClose}>
+        <CoordsModal
+          position={position}
+          dataEl={dataEl}
+          updateTooltipCoords={() => updateTooltipCoords(refCurrent)}>
+          <MenyItem hidden={menyHidden} />
+        </CoordsModal></Portal>
     </main>
   )
 }

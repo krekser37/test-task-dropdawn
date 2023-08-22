@@ -4,7 +4,14 @@
   border: 1px solid ;
   border-radius: 5px;
   background-color: var(--bg-accent-color);
+  transform: translateY(0);
+  transition: 1s;
 }
+
+/* .list_hidden{
+  transform: translateY(-100%);
+  transition: 1s;
+} */
 
 
 .item {

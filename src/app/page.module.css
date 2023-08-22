@@ -1,18 +1,14 @@
 .main{
   max-width: 1220px;
   margin: 0 auto;
-/*   padding-top: 40px; */
 }
 
 .container {
-  margin: 0 ;
+  margin: 0;
 }
 
 .title{
   margin: 40px auto ;
-}
-.description{
-  min-width: 600px;
 }
 
 .menu{
@@ -22,11 +18,6 @@
   margin: 0 auto;
   grid-template-columns: repeat(3, 1fr);
   justify-items: center;
-
-
-/*   justify-content: space-between;
-  align-items: center;
-  align-content: center; */
   gap: 100px;
 }
 
@@ -38,6 +29,6 @@
   cursor: pointer;
 }
 
-.item:last-child{
+.menu__item:last-child{
   margin-bottom: 0;
 }

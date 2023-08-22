@@ -1,15 +1,13 @@
-import { CoordsModal } from '@/components/coords-modal/coords-modal';
-import './globals.css'
-import type { Metadata } from 'next'
-import { Open_Sans } from "next/font/google"
-
+import './globals.css';
+import type { Metadata } from 'next';
+import { Open_Sans } from "next/font/google";
 
 const openSans = Open_Sans({ subsets: ["cyrillic"] });
 
 export const metadata: Metadata = {
   title: 'Dropdawn',
   description: 'Test task',
-}
+};
 
 export default function RootLayout({ children, }: { children: React.ReactNode }) {
 
@@ -20,4 +18,4 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
       </body>
     </html>
   )
-}
+};

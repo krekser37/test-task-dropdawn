@@ -1,16 +1,34 @@
-import React from 'react'
+import React from 'react';
 import { Edit, Trash2, Share2 } from 'react-feather';
 import styles from "./meny-item.module.css";
+import { menyItem } from './constants';
 
-const MenyItem = () => {
+type TMenyItem = {
+  hidden: boolean;
+}
+
+const MenyItem = ({ hidden }: TMenyItem) => {
+
+  const typeIcon = (type: string) => {
+    switch (type) {
+      case 'share':
+        return <Share2 size={20} />;
+      case 'edit':
+        return <Edit size={20} />;
+      case 'trash':
+        return <Trash2 size={20} />;
+    }
+  }
   return (
-    <section className={styles.list}>
-      <ul >
-        <li className={styles.item} >Поделиться в социальных сетях<Share2 size={20} /></li>
-        <li className={styles.item} >Редактировать страницу<Edit size={20} /></li>
-        <li className={styles.item} >Удалить страницу<Trash2 size={20} /></li>
-      </ul>
-    </section>
+    <>
+      {hidden && <section className={styles.list}>
+        <ul >
+          {menyItem.map((item) => {
+            return <li key={item.id} className={styles.item} >{item.title}{typeIcon(item.type)}</li>
+          })}
+        </ul>
+      </section>}
+    </>
   )
 }
 
